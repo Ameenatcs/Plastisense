@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plastic Waste Detection System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    
+</head>
+<body>
+    <div class="container mt-5">
+        <img src="../static/images/logo.png" alt="PlastiSense Logo" id="logo">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="card card-1">
+                    <div class="card-header"><center><h5>Water Quality Parameters</h5></center></div>
+                    <div class="card-body">
+                        <form method="post" action="/predict" id="water-form">
+                            <div class="form-group"><label><h6>pH:</h6></label><input type="text" class="form-control" name="pH" required></div>
+                            <div class="form-group"><label><h6>Turbidity(NTU):</h6></label><input type="text" class="form-control" name="Turbidity" required></div>
+                            <div class="form-group"><label><h6>TDS (Total Dissolved Solids)(mg/L):</h6></label><input type="text" class="form-control" name="TDS" required></div>
+                            <div class="form-group"><label><h6>Conductivity(µS/cm):</h6></label><input type="text" class="form-control" name="Conductivity" required></div>
+                            <button type="submit" class="btn btn-primary" id="predict-btn">
+                                <span id="btn-text"><h6>Predict</h6></span>
+                                <span id="btn-loader" class="loader"></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card card-2">
+                    <div class="card-header"><center><h5>Prediction Result</h5></center></div>
+                    <div class="card-body">
+                        <div id="resultMessage"></div>
+                        <div id="alertStatus"></div>
+                        <div id="confidenceStatus"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById("water-form").onsubmit = async function(event) {
+            event.preventDefault();
+            let formData = new FormData(event.target);
+    
+            // Button Loading Effect
+            document.getElementById("btn-text").style.display = 'none';
+            document.getElementById("btn-loader").style.display = 'inline-block';
+            document.getElementById("predict-btn").disabled = true;
+    
+            try {
+                let response = await fetch("/predict", { method: "POST", body: formData });
+                let result = await response.json();
+    
+                // Restore button state
+                document.getElementById("btn-text").style.display = 'inline';
+                document.getElementById("btn-loader").style.display = 'none';
+                document.getElementById("predict-btn").disabled = false;
+    
+                // Update result message
+                let resultDiv = document.getElementById("resultMessage");
+                resultDiv.innerHTML = result.result.includes("No Plastic Waste") 
+                    ? '<div class="alert alert-success">' + result.result + '</div>' 
+                    : '<div class="alert alert-danger">' + result.result + '</div>';
+    
+                document.getElementById("alertStatus").innerHTML = result.alert_status 
+                    ? '<div class="alert alert-warning">' + result.alert_status + '</div>' 
+                    : '';
+    
+                // Confidence Scaling & Color Mapping
+                let conf = parseFloat(result.confidence);
+                let barWidth = conf + "%";
+                let red, green;
+    
+                if (conf <= 65) {
+                    // 0-65% Confidence (Green to Yellow)
+                    red = Math.min((conf / 65) * 255, 255);
+                    green = 255;
+                } else {
+                    // 65-100% Confidence (Yellow to Red)
+                    red = 255;
+                    green = Math.max(255 - ((conf - 65) / 35) * 255, 0);
+                }
+    
+                let color = `rgb(${red}, ${green}, 0)`;
+    
+                document.getElementById("confidenceStatus").innerHTML = `
+                    <div>Confidence Level: <strong>${conf.toFixed(2)}%</strong> </div>
+                    
+                    <div style="position: relative; width: 100%; background: #ddd; height: 30px; border-radius: 8px; overflow: hidden; margin-top: 10px;">
+                        <div style="width:${barWidth}; background-color:${color}; height: 100%; transition: width 0.5s;"></div>    
+                    </div>
+    
+                    <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                        <span style="font-size: 13px; font-weight: bold; color: white;">Non-Plastic (0-65%)</span>
+                        <span style="font-size: 13px; font-weight: bold; color: white;">Plastic (65-100%)</span>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+    </script>
+    </body>
+</html>

@@ -1,0 +1,97 @@
+.progress-bar-rgb {
+    height: 30px;
+    transition: width 0.5s ease-in-out;
+}
+#logo {
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 133px;
+}
+.loader {
+    display: none;
+    border: 3px solid white;
+    border-radius: 50%;
+    border-top: 3px solid #231b1b;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.card-body {
+    position: relative;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+}
+.card-header {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+}
+.card-body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 0;
+}
+.card-body > * {
+    position: relative;
+    z-index: 1;
+}
+.btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 38px;
+    position: relative;
+    overflow: hidden;
+    padding: 0; 
+}
+.btn-primary .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    margin-top: -8px; 
+}
+
+.card {
+    background-image: url('/static/images/image456.jpeg');
+    background-size: cover; 
+    background-position: center center; 
+    background-repeat: no-repeat; 
+}
+
+.card-body {
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+}
+
+.card {
+    margin-bottom: 15px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+@media (max-width: 768px) {
+    .card-body {
+        background-size: contain;
+        background-position: center center;
+    }
+}
