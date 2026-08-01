@@ -67,7 +67,7 @@ The Flask application:
 
 ```text
 Plastisense/
-├── Templates/
+├── templates/
 │   └── index.html
 ├── static/
 │   ├── css/
