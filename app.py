@@ -6,6 +6,8 @@ from email.mime.text import MIMEText
 
 import joblib
 from flask import Flask, jsonify, render_template, request
+from dotenv import load_dotenv
+load_dotenv()
 
 
 app = Flask(__name__)
